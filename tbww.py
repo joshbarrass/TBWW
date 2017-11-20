@@ -11,8 +11,7 @@ class Bot(object):
         self.IP = IP
         if PORT == None:
             PORT = int(os.environ.get("PORT","5000"))
-        else:
-            self.PORT = PORT
+        self.PORT = PORT
 
         #Most important bit!
         self.updater = Updater(token=TOKEN)
@@ -25,3 +24,12 @@ class Bot(object):
                                    url_path=self.TOKEN)
         self.updater.bot.set_webhook(host+self.TOKEN)
         self.updater.idle()
+
+    def command(self,name):
+        def decorator(function):
+            def wrapper():
+                return function
+            self.dispatcher.add_handler(CommandHandler(name,function))
+            
+            return wrapper()
+        return decorator
