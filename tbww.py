@@ -25,11 +25,11 @@ class Bot(object):
         self.updater.bot.set_webhook(host+self.TOKEN)
         self.updater.idle()
 
-    def command(self,name):
+    def command(self,name,pass_args=False):
         def decorator(function):
             def wrapper():
                 return function
-            self.dispatcher.add_handler(CommandHandler(name,function))
+            self.dispatcher.add_handler(CommandHandler(name,function,pass_args=pass_args))
             
             return wrapper()
         return decorator
