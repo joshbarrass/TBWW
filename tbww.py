@@ -47,7 +47,7 @@ class Bot(object):
         self.updater.bot.set_webhook(host+self.TOKEN)
         self.updater.idle()
 
-    def command(self,name,permissions=None):
+    def command(self,name,pass_args=False,permissions=None):
         def decorator(function):
             def wrapper(*args,**kwargs):
                 if permissions != None:
@@ -59,7 +59,7 @@ class Bot(object):
                         return function()
                 return function()
             
-            self.dispatcher.add_handler(CommandHandler(name,wrapper))
+            self.dispatcher.add_handler(CommandHandler(name,wrapper,pass_args=pass_args))
             
             return wrapper()
         return decorator
