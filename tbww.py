@@ -37,7 +37,7 @@ class Bot(object):
 
         #Set up permissions
         self.permissions = None # This should be an immutableDict. It can still be overwritten but it should be fairly safe.
-        self.default_perms = defaukt_perms
+        self.default_perms = default_perms
 
     def start_webhook(self,host):
         """Host should be heroku app domain if on heroku"""
