@@ -1,6 +1,5 @@
 ##TBWW, based on python-telegram-bot
 
-
 import os
 from telegram.ext import Updater, CommandHandler
 
@@ -37,7 +36,7 @@ class Bot(object):
         self.dispatcher = self.updater.dispatcher # Shortcut
 
         #Set up permissions
-        self.permissions = None # This should be an immutableDict. It can still be overwritten but it should be fairly safe.
+        self.permissions = None
         self.default_perms = default_perms
 
     def start_webhook(self,host):
@@ -48,23 +47,31 @@ class Bot(object):
         self.updater.bot.set_webhook(host+self.TOKEN)
         self.updater.idle()
 
+    def get_remote_permissions(self): # Placeholder for future SQL database of permissions
+        return {}
+
     def command(self,name,pass_args=False,permissions=None):
         def decorator(function):
-            def wrapper(*args,**kwargs):
-                if permissions != None:
-                    if permissions < self.permissions[args[1].message.from_user.id]:
+            def top(function):
+                def wrapper(*args,**kwargs):
+                    if permissions != None:
+                        if (self.permissions.has_key(args[1].message.from_user.id) and permissions >= self.permissions[args[1].message.from_user.id]):
+                            function(*args,**kwargs)
+                            return None
+                        remote_perms = self.get_remote_permissions()
+                        if (remote_perms.has_key(args[1].message.from_user.id) and permissions >= remote_perms[args[1].message.from_user.id]):
+                            function(*args,**kwargs)
+                            return None
+                        if permissions >= self.default_perms:
+                            function(*args,**kwargs)
+                            return None
                         args[0].send_message(chat_id=args[1].message.chat_id,
-                                             text="You do not have permission to use this command!")
+                                                 text="You do not have permission to use this command!")
                         return None
                     else:
-                        return function()
-                return function()
-            
-            self.dispatcher.add_handler(CommandHandler(name,wrapper,pass_args=pass_args))
-            
-            return wrapper()
+                        function(*args,**kwargs)
+                
+                return wrapper
+            self.dispatcher.add_handler(CommandHandler(name,top(function),pass_args=pass_args))
         return decorator
 
-    def set_permissions(self,D):
-        """Set an immutableDict of permissions"""
-        self.permissions = immutableDict(D)
