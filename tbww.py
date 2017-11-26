@@ -36,7 +36,7 @@ class Bot(object):
         self.dispatcher = self.updater.dispatcher # Shortcut
 
         #Set up permissions
-        self.permissions = None
+        self.permissions = {}
         self.default_perms = default_perms
 
     def start_webhook(self,host):
@@ -47,8 +47,16 @@ class Bot(object):
         self.updater.bot.set_webhook(host+self.TOKEN)
         self.updater.idle()
 
-    def get_remote_permissions(self): # Placeholder for future SQL database of permissions
+    def get_remote_permissions(self): # Define this yourself with inheritence
         return {}
+
+    def get_user_perms(self,user):
+        if self.permissions.has_key(user):
+            return self.permissions[user]
+        remote = self.get_remote_permissions()
+        if remote.has_key(user):
+            return self.permissions[user]
+        return self.default_perms
 
     def command(self,name,pass_args=False,permissions=None):
         def decorator(function):
