@@ -51,11 +51,12 @@ class Bot(object):
         return {}
 
     def get_user_perms(self,user):
+        user = int(user)
         if self.permissions.has_key(user):
             return self.permissions[user]
         remote = self.get_remote_permissions()
         if remote.has_key(user):
-            return self.permissions[user]
+            return remote[user]
         return self.default_perms
 
     def command(self,name,pass_args=False,permissions=None):
