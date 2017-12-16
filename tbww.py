@@ -108,3 +108,28 @@ class Bot(object):
                 return wrapper
             self.dispatcher.add_handler(MessageHandler(filters.Filters.document,top(function)))
         return decorator
+
+    def audio_handler(self,permissions=None):
+        def decorator(function):
+            def top(function):
+                def wrapper(*args,**kwargs):
+                    if permissions != None:
+                        if (self.permissions.has_key(args[1].message.from_user.id) and permissions >= self.permissions[args[1].message.from_user.id]):
+                            function(*args,**kwargs)
+                            return None
+                        remote_perms = self.get_remote_permissions()
+                        if (remote_perms.has_key(args[1].message.from_user.id) and permissions >= remote_perms[args[1].message.from_user.id]):
+                            function(*args,**kwargs)
+                            return None
+                        if permissions >= self.default_perms:
+                            function(*args,**kwargs)
+                            return None
+                        args[0].send_message(chat_id=args[1].message.chat_id,
+                                                 text="You do not have permission to use this command!")
+                        return None
+                    else:
+                        function(*args,**kwargs)
+                
+                return wrapper
+            self.dispatcher.add_handler(MessageHandler(filters.Filters.audio,top(function)))
+        return decorator
