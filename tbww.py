@@ -1,7 +1,7 @@
 ##TBWW, based on python-telegram-bot
 
 import os
-from telegram.ext import Updater, CommandHandler, filters
+from telegram.ext import Updater, CommandHandler, MessageHandler, filters
 
 class immutableDict(dict):
     def __delattr__(self,*args,**kwargs):
