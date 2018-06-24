@@ -39,7 +39,7 @@ class Bot(object):
         self.permissions = {}
         self.default_perms = default_perms
 
-    def _permissions_checker(function,permissions):
+    def _permissions_checker(self,function,permissions):
         if permissions != None:
             if (self.permissions.has_key(args[1].message.from_user.id) and permissions >= self.permissions[args[1].message.from_user.id]):
                 function(*args,**kwargs)
