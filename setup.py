@@ -2,9 +2,10 @@ from setuptools import setup
 
 import sys, os
 
-if sys.argv[0] == "publish":
+if sys.argv[0] == "publish" or sys.argv[1] == "publish":
     os.system("python setup.py sdist")
     os.system("twine upload dist/*")
+    sys.exit(0)
 
 setup(
     name="TBWW",
