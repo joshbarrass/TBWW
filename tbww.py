@@ -111,4 +111,4 @@ class Bot(object):
         return decorator
 
     def conversation(self,states,permissions=None):
-        
+        pass
