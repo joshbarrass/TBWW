@@ -39,7 +39,7 @@ class Bot(object):
         self.permissions = {}
         self.default_perms = default_perms
 
-    def _permissions_checker(self,function,permissions):
+    def _permissions_checker(self,function,permissions,*args,**kwargs):
         if permissions != None:
             if (self.permissions.has_key(args[1].message.from_user.id) and permissions >= self.permissions[args[1].message.from_user.id]):
                 function(*args,**kwargs)
@@ -81,21 +81,33 @@ class Bot(object):
         def decorator(function):
             def top(function):
                 def wrapper(*args,**kwargs):
-                    self._permissions_checker(function,permissions) 
+                    self._permissions_checker(function,permissions,*args,**kwargs)
                 
                 return wrapper
-            self.dispatcher.add_handler(CommandHandler(name,top(function),pass_args=pass_args))
-            return function
+            handler = CommandHandler(name,top(function),pass_args=pass_args)
+            self.dispatcher.add_handler(handler)
+            return handler
+        return decorator
+
+    def handler(self,pass_args=False,permissions=None):
+        def decorator(function):
+            def top(function):
+                def wrapper(*args,**kwargs):
+                    self._permissions_checker(function,permissions,*args,**kwargs)
+                
+                return wrapper
+            return CommandHandler(name,top(function),pass_args=pass_args)
         return decorator
 
     def document_handler(self,permissions=None):
         def decorator(function):
             def top(function):
                 def wrapper(*args,**kwargs):
-                    self._permissions_checker(function,permissions) 
+                    self._permissions_checker(function,permissions,*args,**kwargs) 
                 
                 return wrapper
-            self.dispatcher.add_handler(MessageHandler(filters.Filters.document,top(function)))
+            handler = MessageHandler(filters.Filters.document,top(function))
+            self.dispatcher.add_handler(handler)
             return function
         return decorator
 
@@ -103,12 +115,13 @@ class Bot(object):
         def decorator(function):
             def top(function):
                 def wrapper(*args,**kwargs):
-                    self._permissions_checker(function,permissions)                
+                    self._permissions_checker(function,permissions,*args,**kwargs)                
 
                 return wrapper
-            self.dispatcher.add_handler(MessageHandler(filters.Filters.audio,top(function)))
+            handler = MessageHandler(filters.Filters.audio,top(function))
+            self.dispatcher.add_handler(handler)
             return function
         return decorator
 
-    def conversation(self,states,permissions=None):
+    def add_conversation(self,states,permissions=None):
         pass
