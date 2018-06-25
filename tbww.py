@@ -102,7 +102,7 @@ class Bot(object):
                     self._permissions_checker(function,permissions,*args,**kwargs)
                 
                 return wrapper
-            return CommandHandler(name,top(function),pass_args=pass_args)
+            return MessageHandler(Filters.text,top(function))
         return decorator
 
     def document_handler(self,permissions=None):
