@@ -3,6 +3,10 @@
 import os
 from telegram.ext import Updater, CommandHandler, MessageHandler, filters, ConversationHandler
 
+def cancel_command(bot,update):
+    update.message.reply_text("Cancelled.")
+    return ConversationHandler.END
+
 class immutableDict(dict):
     def __delattr__(self,*args,**kwargs):
         return None
@@ -38,6 +42,8 @@ class Bot(object):
         #Set up permissions
         self.permissions = {}
         self.default_perms = default_perms
+
+        self.end_conversation = ConversationHandler.END
 
     def _permissions_checker(self,function,permissions,*args,**kwargs):
         if permissions != None:
@@ -123,5 +129,11 @@ class Bot(object):
             return function
         return decorator
 
-    def add_conversation(self,states,permissions=None):
-        pass
+    def add_conversation(self,entry_points,states,fallbacks=[CommandHandler("cancel",cancel_command)]):
+        conversation = ConversationHandler(
+            entry_points=entry_points,
+            states=states,
+            fallbacks=fallbacks
+            )
+        self.dispatcher.add_handler(conversation)
+        
