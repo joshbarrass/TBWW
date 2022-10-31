@@ -11,8 +11,8 @@ if sys.argv[0] == "publish" or sys.argv[1] == "publish":
 
 setup(
     name="TBWW",
-    version="0.3.1",
-    description="Telegram Bot Wrapper Wraper",
+    version="0.3.2",
+    description="Telegram Bot Wrapper Wraper.\n\nPackage versions <=0.3.0 target Python 2. Versions >=0.3.1 target Python 3.",
     license="GNU GPL 3.0",
     install_requires=["python-telegram-bot"],
     py_modules = ["tbww"]
