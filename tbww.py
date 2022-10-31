@@ -1,7 +1,7 @@
 ##TBWW, based on python-telegram-bot
 
 import os
-from telegram.ext import Updater, CommandHandler, MessageHandler, filters, ConversationHandler
+from telegram.ext import Updater, CommandHandler, MessageHandler, filters, ConversationHandler, InlineQueryHandler
 
 def cancel_command(bot,update):
     update.message.reply_text("Cancelled.")
@@ -47,11 +47,11 @@ class Bot(object):
 
     def _permissions_checker(self,function,permissions,*args,**kwargs):
         if permissions != None:
-            if (self.permissions.has_key(args[1].message.from_user.id) and permissions >= self.permissions[args[1].message.from_user.id]):
+            if (args[1].message.from_user.id in self.permissions and permissions >= self.permissions[args[1].message.from_user.id]):
                 function(*args,**kwargs)
                 return None
             remote_perms = self.get_remote_permissions()
-            if (remote_perms.has_key(args[1].message.from_user.id) and permissions >= remote_perms[args[1].message.from_user.id]):
+            if (args[1].message.from_user.id in remote_perms and permissions >= remote_perms[args[1].message.from_user.id]):
                 function(*args,**kwargs)
                 return None
             if permissions >= self.default_perms:
@@ -76,10 +76,10 @@ class Bot(object):
 
     def get_user_perms(self,user):
         user = int(user)
-        if self.permissions.has_key(user):
+        if user in self.permissions:
             return self.permissions[user]
         remote = self.get_remote_permissions()
-        if remote.has_key(user):
+        if user in remote:
             return remote[user]
         return self.default_perms
 
@@ -125,6 +125,18 @@ class Bot(object):
 
                 return wrapper
             handler = MessageHandler(filters.Filters.audio,top(function))
+            self.dispatcher.add_handler(handler)
+            return function
+        return decorator
+
+    def inline_handler(self,permissions=None):
+        def decorator(function):
+            def top(function):
+                def wrapper(*args,**kwargs):
+                    self._permissions_checker(function,permissions,*args,**kwargs)                
+
+                return wrapper
+            handler = InlineQueryHandler(top(function))
             self.dispatcher.add_handler(handler)
             return function
         return decorator
