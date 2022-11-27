@@ -129,6 +129,18 @@ class Bot(object):
             return function
         return decorator
 
+    def voice_handler(self,permissions=None):
+        def decorator(function):
+            def top(function):
+                def wrapper(*args,**kwargs):
+                    self._permissions_checker(function,permissions,*args,**kwargs)
+
+                return wrapper
+            handler = MessageHandler(filters.Filters.voice,top(function))
+            self.dispatcher.add_handler(handler)
+            return function
+        return decorator
+
     def inline_handler(self,permissions=None):
         def decorator(function):
             def top(function):
