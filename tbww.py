@@ -71,6 +71,9 @@ class Bot(object):
         self.updater.bot.set_webhook(host+self.TOKEN)
         self.updater.idle()
 
+    def start_polling():
+        self.updater.start_polling()
+
     def get_remote_permissions(self): # Define this yourself with inheritence
         return {}
 
